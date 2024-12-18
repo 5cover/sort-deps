@@ -14,16 +14,9 @@ import graph as g
 
 graph = g.from_json(sys.stdin)
 
-
-
 def define_before_use(item: str):
     """If an item should come before its dependents"""
     return item.startswith('macro') or item.startswith('fdecl') or item.startswith('typedef')
-
-
-def dependent_count(item: str):
-    """The number of items that depend on the item of this name"""
-    return sum(item in dependencies for dependencies in graph.values())
 
 
 def c_sort_key(item: str):
@@ -56,7 +49,7 @@ def bfs_deps(root: str, sort_key: Callable[[str], Any] | None = None):
         f.extend(after)
 
 
-root = min(graph, key=dependent_count)
+root = min(graph, key=lambda item: g.dependent_count(graph, item))
 
 for item in bfs_deps(root):
     print(item)

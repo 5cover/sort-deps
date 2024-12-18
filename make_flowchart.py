@@ -7,27 +7,33 @@ Reads a graph JSON and produces a Mermaid flowchart for it.
 import sys
 import graph as g
 
-# todo: improve canonicalization
+# todo: improve canonicalization more
 
 graph = g.from_json(sys.stdin)
 
 print('flowchart')
 
-visited: set[str] = set()
+done: g.Graph = g.empty()
 
 
 def print_deps(node: str):
-    for dep in sorted(graph[node]):
-        if dep not in graph[node]:
-            continue
+    print(node, end='')
 
-        print(node, end='-->')
-        graph[node].discard(dep)
-        if len(graph[dep] - {dep}) == 1:
+    deps = sorted(graph[node] - done[node])
+    done[node].update(deps)
+
+    first = True
+    for dep in deps:
+        if first:
+            first = False
+            print(end='-->')
             print_deps(dep)
         else:
-            print(dep)
+            print()
+            print(node, end='-->')
+            print_deps(dep)
 
 
-for node in sorted(graph):
-    print_deps(node)
+root = min(graph, key=lambda item: g.dependent_count(graph, item))
+
+print_deps(root)
