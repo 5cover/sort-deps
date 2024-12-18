@@ -1,4 +1,4 @@
-# Namelazz
+# Sort-deps
 
 Order things that depend on each other.
 

@@ -7,12 +7,12 @@ Outputs the canically ordered symbols.
 """
 
 import sys
-import json
 from collections import deque
+from collections.abc import Callable
+import graph as g
 
-graph: dict[str, set[str]] = {name: {*deps} for name, deps in json.load(sys.stdin).items()}
+graph = g.from_json(sys.stdin)
 
-kind_order = ['macro', 'typedef', 'fdecl', 'fdef']
 
 
 def define_before_use(item: str):
@@ -25,12 +25,12 @@ def dependent_count(item: str):
     return sum(item in dependencies for dependencies in graph.values())
 
 
-def sort_key(item: str):
+def c_sort_key(item: str):
     kind, name = item.split('-', 2)
-    return (kind_order.index(kind), name)
+    return (('macro', 'typedef', 'fdecl', 'fdef').index(kind), name)
 
 
-def bfs_deps(root: str):
+def bfs_deps(root: str, sort_key: Callable[[str], any] | None = None):
     """
     BFS with two modifications
     - Neighbors (dependencies) are sorted alphabetically
