@@ -8,6 +8,7 @@ Outputs the canically ordered symbols.
 
 import sys
 from collections import deque
+from typing import Any
 from collections.abc import Callable
 import graph as g
 
@@ -30,7 +31,7 @@ def c_sort_key(item: str):
     return (('macro', 'typedef', 'fdecl', 'fdef').index(kind), name)
 
 
-def bfs_deps(root: str, sort_key: Callable[[str], any] | None = None):
+def bfs_deps(root: str, sort_key: Callable[[str], Any] | None = None):
     """
     BFS with two modifications
     - Neighbors (dependencies) are sorted alphabetically
